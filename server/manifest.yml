@@ -1,11 +1,11 @@
   applications:
-  - name: djangoapp
+  - name: raducardealership
     routes:
-      - route: $HOST.$DOMAIN
+      - route: raducardealership.eu-de.mybluemix.net
     memory: 128M
     buildpack: python_buildpack
-  - name: djangoapp-nginx
+  - name: raducardealership-nginx
     routes:
-      - route: $HOST.$DOMAIN/static
+      - route: raducardealership.eu-de.mybluemix.net/static
     memory: 128M
     buildpack: staticfile_buildpack
