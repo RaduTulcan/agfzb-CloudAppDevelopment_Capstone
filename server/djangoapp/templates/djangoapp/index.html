@@ -11,6 +11,22 @@
     <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/bootstrap-table.min.js"></script>
     <script src="https://unpkg.com/bootstrap-table@1.18.2/dist/extensions/filter-control/bootstrap-table-filter-control.min.js"></script>
 
+    <style>
+        
+        .fade-carousel .slides .slide-1, 
+.fade-carousel .slides .slide-2,
+.fade-carousel .slides .slide-3 {
+  height: 80vh;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+}
+.fade-carousel .slides .slide-1 {
+  background-image:linear-gradient(to bottom, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.73)), url(https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80); 
+}
+
+    </style>
+       
 </head>
 
     <body>
@@ -50,7 +66,66 @@
         </div>
         </div>
       </nav>
+
+      <div class="carousel fade-carousel slide" data-ride="carousel" data-interval="4000" id="bs-carousel">
+        <!-- Wrapper for slides -->
+        <div class="carousel-inner">
+          <div class="item slides active">
+            <div class="slide-1">
+            <div class="hero border h-100 d-flex flex-column justify-content-center align-items-center" >
+              <hgroup>
+                  <h1 style = "text-align:center; color: white">We deliver.</h1>        
+                  <h3 style = "text-align:center; color: white">  Get aquainted with our dealership community</h3>
+              </hgroup>
+              <div class = "d-flex mt-2">
+                <a href ="{% url 'djangoapp:about' %}"><button class="btn btn-hero btn-lg text-white border mr-2" role="button">About us</button></a>
+                <a href ="#dealerships"><button class="btn btn-hero btn-lg text-white border" role="button">See all dealerships</button></a>
+              </div>
+            </div>
+        </div>
+          </div>
     
+        </div> 
+    
+        <h2 id="dealerships"class="w-100 mt-4 mb-4"style="text-align: center">
+            Our Dealerships
+        </h2>
+      <table class="table w-75" id="table"
+                data-filter-control="true" style = "margin-left: auto; margin-right:auto">
+                <thead>
+                    <tr>
+                        <th data-field="id">ID</th>
+                        <th data-field="full_name">Dealer Name</th>
+                        <th data-field="city">City</th>
+                        <th data-field="address">Address</th>
+                        <th data-field="zip">Zip</th>
+                        <th data-field="state" data-filter-control="select">State</th>
+                    </tr>
+                </thead>
+                 <tbody>
+                    {% for dealer in dealership_list %}
+                        <tr>
+                            
+                            <td>{{dealer.id}}</td>
+                            <td><a href="{% url 'djangoapp:dealer_details' dealer.id %}">{{dealer.full_name}}</a></td>
+                            <td>{{dealer.city}}</td>
+                            <td>{{dealer.address}}</td>
+                            <td>{{dealer.zip}}</td>
+                            <td>{{dealer.st}}</td>
+                        </tr>
+                    {% endfor %}
+                 </tbody>
+            </table>
+            </div>
+
+        </div>
+        <br>
+    
+        <script>
+            $(function() {
+              $('#table').bootstrapTable()
+            })
+          </script>
 
     </body>
 
