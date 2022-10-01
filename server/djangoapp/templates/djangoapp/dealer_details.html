@@ -59,7 +59,7 @@
 
     <h2 class="mt-4 ml-4 mb-2">Reviews</h2>
     {% if user.is_authenticated %}
-    <div class ="d-flex justify-content-end mr-4 mb-4">
+    <div class ="d-flex justify-content-end  mb-4" style="margin-right:5rem">
         <a href = "{% url 'djangoapp:add_review' dealership.id %}"><button type="button" class="btn btn-primary" style ="">Add review</button></a>
     </div>
     {% endif %}
@@ -71,10 +71,10 @@
                    
                     <div class="card-body">
                         {% if review.car_make%}
-                        <h5 class="card-title">{{review.car_make}}, {{review.car_model}} <span style="font-weight:normal; font-size:0.8rem"><i>({{review.car_year}})</i></span> </h5>
-                        
+                        <h5 style="margin-bottom:0" class="card-title">{{review.car_make}}, {{review.car_model}} <span style="font-weight:normal; font-size:0.8rem"><i>({{review.car_year}})</i></span> </h5>
+                        <span style="margin-bottom:20px;font-size:0.8rem; color: rgb(107 114 128);"> by {{review.name}}</span>
                         {% endif %}
-                        <p class="card-text">{{review.review}}</p>
+                        <p class="card-text mt-2">{{review.review}}</p>
                         {% if review.sentiment == "positive" %}
                         <img class="card-img-left" src="{{MEDIA_URL}}/emoji/positive.png" width="36px" height="36px" style="float:right"
                             alt="Sentiment">

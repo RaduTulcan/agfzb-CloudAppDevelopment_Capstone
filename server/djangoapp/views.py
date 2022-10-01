@@ -9,6 +9,7 @@ from django.contrib import messages
 from datetime import datetime
 import logging
 import json
+import random
 
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
@@ -121,8 +122,8 @@ def add_review(request, dealer_id):
             car = CarModel.objects.get(pk=car_id)
             payload["time"] = datetime.utcnow().isoformat()
             payload["name"] = username
-            payload["dealership"] = id
-            payload["id"] = id
+            payload["dealership"] = dealer_id
+            payload["id"] = random.randint(100, 100000)
             payload["review"] = request.POST["content"]
             payload["purchase"] = False
             if "purchasecheck" in request.POST:
@@ -132,8 +133,6 @@ def add_review(request, dealer_id):
                 payload["car_make"] = car.car_make.name
                 payload["car_model"] = car.name
                 payload["car_year"] = int(car.year.strftime("%Y"))
-                new_payload = {}
-                new_payload["review"] = payload
                 review_post_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/organizationMine_djangoserver-space/dealership-package/post-review"
-                post_request(review_post_url, new_payload, id=dealer_id)
-                return redirect("djangoapp:dealer_details", id=dealer_id)
+                post_request(review_post_url, payload, id=dealer_id)
+                return redirect("djangoapp:dealer_details", dealer_id=dealer_id)
