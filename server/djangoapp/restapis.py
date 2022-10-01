@@ -2,6 +2,9 @@ import requests
 import json
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import Features,SentimentOptions
 
 
 # Create a `get_request` to make HTTP GET requests
@@ -38,7 +41,12 @@ def get_request(url, **kwargs):
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
-
+def post_request(url, payload, **kwargs):
+    print("POST to {} ".format(url))
+    response = requests.post(url, params=kwargs, json=payload)
+    status_code = response.status_code
+    json_data = json.loads(response.text)
+    return json_data
 
 # Create a get_dealers_from_cf method to get dealers from a cloud function
 # def get_dealers_from_cf(url, **kwargs):
@@ -70,7 +78,8 @@ def get_dealers_from_cf(url, **kwargs):
 def get_dealer_by_id_from_cf(url, dealerId):
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url, dealerId=dealerId)
+    json_result = get_request(url, id=dealerId)
+    print(json_result)
     if json_result:
         # Get the row list in JSON as dealers
         dealers = json_result
@@ -90,7 +99,7 @@ def get_dealer_by_id_from_cf(url, dealerId):
 def get_dealers_reviews_from_cf(url, dealerId):
     results = []
     # Call get_request with a URL parameter
-    json_result = get_request(url + "/" + str(dealerId))
+    json_result = get_request(url,dealerId = dealerId)
     if json_result:
         # Get the row list in JSON as dealers
         reviews = json_result
@@ -114,6 +123,9 @@ def get_dealers_reviews_from_cf(url, dealerId):
             if "car_year" in review:
                 review_obj.car_year = review["car_year"]
 
+            sentiment = analyze_review_sentiments(review_obj.review)
+            review_obj.sentiment = sentiment
+
             results.append(review_obj)
 
     return results
@@ -123,9 +135,15 @@ def get_dealers_reviews_from_cf(url, dealerId):
 # def analyze_review_sentiments(text):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
-def post_request(url, payload, **kwargs):
-    print("POST to {} ".format(url))
-    response = requests.post(url, params=kwargs, json=payload)
-    status_code = response.status_code
-    json_data = json.loads(response.text)
-    return json_data
+def analyze_review_sentiments(text):
+    url = "https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/b866b957-ab54-4b6f-bfb9-28a7f8ea1c63"
+    api_key = "nQ8S_30wxXxDLbPI1QxAFpUO8VtDiBM2GAiyYqIubt3L"
+    authenticator = IAMAuthenticator(api_key)
+    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-08-01',authenticator=authenticator)
+    natural_language_understanding.set_service_url(url)
+    response = natural_language_understanding.analyze( text=text+"hello hello hello",features=Features(sentiment=SentimentOptions(targets=[text+"hello hello hello"]))).get_result()
+    label=json.dumps(response, indent=2)
+    label = response['sentiment']['document']['label']
+    
+    
+    return(label)

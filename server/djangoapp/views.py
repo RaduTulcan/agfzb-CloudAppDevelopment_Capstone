@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
-# from .models import related models
-from .restapis import get_dealers_from_cf, get_dealers_reviews_from_cf
+from .models import CarModel
+from .restapis import get_dealers_from_cf, get_dealers_reviews_from_cf, get_dealer_by_id_from_cf, post_request
 from django.contrib.auth import login, logout, authenticate
 from django.contrib import messages
 from datetime import datetime
@@ -98,14 +98,24 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/organizationMine_djangoserver-space/dealership-package/get-review"
         reviews = get_dealers_reviews_from_cf(url, dealer_id)
+        dealership = get_dealer_by_id_from_cf("https://eu-de.functions.appdomain.cloud/api/v1/web/organizationMine_djangoserver-space/dealership-package/get-dealership", dealer_id)
         context["reviews"] = reviews
+        context["dealership"] = dealership[0]
 
         return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
 def add_review(request, dealer_id):
-    if request.message == 'POST':
+    if request.method == 'GET':
+        context = {}
+        dealership = get_dealer_by_id_from_cf("https://eu-de.functions.appdomain.cloud/api/v1/web/organizationMine_djangoserver-space/dealership-package/get-dealership", dealer_id)
+        context["dealership"] = dealership[0]
+        cars = CarModel.objects.all()
+        context["cars"] = cars
+        return render(request, 'djangoapp/add_review.html', context)
+    if request.method == 'POST':
         if request.user.is_authenticated:
+            payload = {}
             username = request.user.username
             car_id = request.POST["car"]
             car = CarModel.objects.get(pk=car_id)
@@ -119,7 +129,7 @@ def add_review(request, dealer_id):
                 if request.POST["purchasecheck"] == 'on':
                     payload["purchase"] = True
                 payload["purchase_date"] = request.POST["purchasedate"]
-                payload["car_make"] = car.make.name
+                payload["car_make"] = car.car_make.name
                 payload["car_model"] = car.name
                 payload["car_year"] = int(car.year.strftime("%Y"))
                 new_payload = {}
