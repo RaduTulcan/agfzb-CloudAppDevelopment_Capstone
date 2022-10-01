@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>About Us </head>
+        <title>About Us </title>
             <meta charset="UTF-8">
             <title>Dealership Review</title>
             <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
@@ -30,29 +30,26 @@
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'djangoapp:contact' %}">Contact Us</a>
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link disabled" href="#">Disabled</a>
-                </li>
               </ul>
               <div class = "d-flex  justify-content-end align-items-center" style = "flex:1">
                 {% if user.is_authenticated %}
                     <span class = "mr-2">{{user.username}}</span>
-                    <button class="btn btn-outline-primary my-2 my-sm-0">Sign Out</button>
+                    <a href = "{% url 'djangoapp:logout' %}"><button class="btn btn-outline-primary my-2 my-sm-0">Sign Out</button> </a>
                 {% else %}
-                    <form class="form-inline my-2 my-lg-0 mr-2" >
+                    <form class="form-inline my-2 my-lg-0 mr-2" action="{% url 'djangoapp:login' %}" method="POST">
                         {% csrf_token %}
-                        <input class="form-control mr-sm-2" type="text" placeholder="Username" aria-label="Username">
-                        <input class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="Password">
+                        <input name = "username" class="form-control mr-sm-2" type="text" placeholder="Username" aria-label="username">
+                        <input name = "password" class="form-control mr-sm-2" type="password" placeholder="Password" aria-label="password">
                         <button class="btn btn-primary my-2 my-sm-0" type="submit">Login</button>
                     </form>
-                    <button class="btn btn-outline-primary my-2 my-sm-0">Sign Up</button>
+                    <a href = "{% url 'djangoapp:registration' %}"><button class="btn btn-outline-primary my-2 my-sm-0">Sign Up</button></a>
               {% endif %}
             </div>
             </div>
           </nav>
         
     
-        <h1>
+        <h1 class ="mr-4 ml-4 mt-4">
             Welcome to Best Cars dealership, home to the best cars in North America. We sell domestic and imported cars at reasonable prices.
         </h1>
     </body>
